@@ -18,6 +18,27 @@
 #   value       = module.eks_cluster.cluster_name
 # }
 
-output "instance_public_ip" {
-  value = module.ec2_instance.instance_public_ip
+
+output "ethos_control_plane_public_ip" {
+  value = module.microk8s.ethos_control_plane_public_ip
+}
+
+output "ethos_control_plane_dns" {
+  value = module.microk8s.ethos_control_plane_dns
+}
+
+output "ethos_control_plane_connection_string" {
+  value = module.microk8s.ethos_control_plane_connection_string
+}
+
+output "ethos_worker_node_public_ip" {
+  value = module.microk8s.ethos_worker_node_public_ip
+}
+
+output "ethos_worker_node_dns" {
+  value = module.microk8s.ethos_worker_node_dns
+}
+
+output "ethos_worker_node_connection_string" {
+  value = module.microk8s.ethos_worker_node_connection_string
 }
