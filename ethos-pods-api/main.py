@@ -8,7 +8,8 @@ from kubernetes import client, config
 app = Flask(__name__)
 
 # Load the Kubernetes configuration
-config.load_kube_config()  # This assumes you have a kubeconfig file set up
+config.load_kube_config(config_file='/app/microk8s-config')  # This assumes you have a kubeconfig file set up
+
 
 @app.route('/create_pod', methods=['POST'])
 def create_pod():
