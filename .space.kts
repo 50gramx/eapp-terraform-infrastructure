@@ -30,6 +30,21 @@ job("Build Pods API Image") {
         }
     }
 
+    container("Setup Configurations") {
+        env["KUBE_CONFIG"] = Secrets("ethos-pods-api-microk8s-config")
+
+        shellScript {
+            content = """
+                echo Get private signing key...
+                echo ${'$'}KUBE_CONFIG > microk8s-config
+            """
+        }
+
+        requirements {
+            workerTags("windows-pool")
+        }
+    }
+
     host("Build and push Pods API image") {
         dockerBuildPush {
             // by default, the step runs not only 'docker build' but also 'docker push'
