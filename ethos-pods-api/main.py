@@ -85,29 +85,6 @@ def get_pods():
     # List all pods in the default namespace
     try:
         pods = v1.list_namespaced_pod(namespace="default")
-        pod_list = []
-        for pod in pods.items:
-            pod_info = {
-                "name": pod.metadata.name,
-                "namespace": pod.metadata.namespace,
-                "node_name": pod.spec.node_name,
-                "status": pod.status.phase,
-                "start_time": pod.status.start_time
-            }
-            pod_list.append(pod_info)
-        return jsonify({"pods": pod_list}), 200
-    except client.exceptions.ApiException as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@app.route('/get_pods', methods=['GET'])
-def get_pods():
-    # Create a Kubernetes API client
-    v1 = client.CoreV1Api()
-
-    # List all pods in the default namespace
-    try:
-        pods = v1.list_namespaced_pod(namespace="default")
         nodes = v1.list_node()
 
         # Extract public IPs of nodes
