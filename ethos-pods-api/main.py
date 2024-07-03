@@ -3,12 +3,14 @@ from datetime import datetime, timedelta
 
 import requests
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from kubernetes import client, config
 
 app = Flask(__name__)
+CORS(app)  # This will enable CORS for all routes
 
 # Load the Kubernetes configuration
-config.load_kube_config(config_file='/app/microk8s-config')  # This assumes you have a kubeconfig file set up
+config.load_kube_config(config_file='/app/ethos-pods-api/microk8s-config')  # This assumes you have a kubeconfig file set up
 
 
 @app.route('/create_pod', methods=['POST'])
