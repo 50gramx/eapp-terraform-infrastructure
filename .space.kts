@@ -30,7 +30,7 @@ job("Build Pods API Image") {
         }
     }
 
-    container("Setup Configurations") {
+    container(displayName = "Setup Configurations") {
         env["KUBE_CONFIG"] = Secrets("ethos-pods-api-microk8s-config")
 
         shellScript {
