@@ -60,7 +60,7 @@ def create_pod():
     )
 
     service = client.V1Service(
-        metadata=client.V1ObjectMeta(name=name),
+        metadata=client.V1ObjectMeta(name=name),  # Use the same name as the pod
         spec=client.V1ServiceSpec(
             selector={"app": "ssh"},
             ports=[client.V1ServicePort(port=2222, target_port=2222, node_port=32222)],
