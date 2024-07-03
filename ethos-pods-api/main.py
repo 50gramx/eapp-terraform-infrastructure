@@ -32,33 +32,31 @@ def create_pod():
 
     # Define the pod spec
     pod = client.V1Pod(
-        metadata=client.V1ObjectMeta(name=name, labels={"app": "ssh"}),
-        spec=client.V1PodSpec(containers=[
-            client.V1Container(
-                name=name,
-                image=image,
-                ports=[client.V1ContainerPort(container_port=22)],
-                env=[{
-                    "name": "USER_NAME",
-                    "value": "pod-user"
-                }, {
-                    "name": "USER_PASSWORD",
-                    "value": "123456789"
-                }, {
-                    "name": "PASSWORD_ACCESS",
-                    "value": "true"
-                }, {
-                    "name": "PUID",
-                    "value": "1000"
-                }, {
-                    "name": "PGID",
-                    "value": "1000"
-                }, {
-                    "name": "TZ",
-                    "value": "Etc/UTC"
-                }]
-            )
-        ])
+        metadata=client.V1ObjectMeta(
+            name=name,
+            labels={"app": "ssh"},
+            annotations={
+                "expiration-time": expiration_time,
+                "cluster-autoscaler.kubernetes.io/ttl": "3600"  # Set TTL for 1 hour
+            }
+        ),
+        spec=client.V1PodSpec(
+            containers=[
+                client.V1Container(
+                    name=name,
+                    image=image,
+                    ports=[client.V1ContainerPort(container_port=22)],
+                    env=[
+                        {"name": "USER_NAME", "value": "pod-user"},
+                        {"name": "USER_PASSWORD", "value": "123456789"},
+                        {"name": "PASSWORD_ACCESS", "value": "true"},
+                        {"name": "PUID", "value": "1000"},
+                        {"name": "PGID", "value": "1000"},
+                        {"name": "TZ", "value": "Etc/UTC"}
+                    ]
+                )
+            ]
+        )
     )
 
     service = client.V1Service(
