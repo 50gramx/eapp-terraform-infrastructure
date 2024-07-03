@@ -1,8 +1,12 @@
 #!/bin/bash
 
-# Function to start SSH port forwarding
+# Function to update file permissions and start SSH port forwarding
 start_port_forwarding() {
-  ssh -i settings/openvpn -N -L 16443:13.200.238.161:16443 ec2-user@13.200.238.161 -v &
+  # Update permissions of settings/openvpn to 600
+  chmod 600 settings/openvpn
+
+  # Start SSH port forwarding with updated permissions
+  ssh -i settings/openvpn -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L 16443:13.200.238.161:16443 ec2-user@13.200.238.161 -v &
   SSH_PID=$!
 }
 

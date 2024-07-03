@@ -35,8 +35,11 @@ job("Build Pods API Image") {
 
         shellScript {
             content = """
-                echo Get private signing key...
+                echo Get kubernetes config...
+                pwd
+                ls
                 echo ${'$'}KUBE_CONFIG > microk8s-config
+                ls
             """
         }
 
