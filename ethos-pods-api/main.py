@@ -1,6 +1,9 @@
+import re
+from datetime import datetime, timedelta
+
+import requests
 from flask import Flask, request, jsonify
 from kubernetes import client, config
-import os
 
 app = Flask(__name__)
 
@@ -17,6 +20,12 @@ def create_pod():
 
     name = data['name']
     image = "linuxserver/openssh-server"
+    expiration_time = (datetime.utcnow() + timedelta(hours=1)).isoformat("T") + "Z"  # ISO 8601 format
+
+    # Ensure the name follows DNS-1035 label rules
+    if not re.match(r'^[a-z]([-a-z0-9]*[a-z0-9])?$', name):
+        return jsonify({
+            "error": "Invalid pod name. Must consist of lower case alphanumeric characters or '-', start with an alphabetic character, and end with an alphanumeric character."}), 422
 
     # Create a Kubernetes API client
     v1 = client.CoreV1Api()
