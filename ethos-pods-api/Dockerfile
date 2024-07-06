@@ -22,5 +22,13 @@ RUN chmod +x /entrypoint.sh
 # Expose the port the server will run on
 EXPOSE 8000
 
+# Set environment variables for SSL
+ENV SSL_CERT /app/certificates/server.crt
+ENV SSL_KEY /app/certificates/server.key
+
+# Copy SSL certificate and key into the container
+COPY certificates/server.crt /app/certificates/server.crt
+COPY certificates/server.key /app/certificates/server.key
+
 # Run the entrypoint script
 ENTRYPOINT ["/entrypoint.sh"]
