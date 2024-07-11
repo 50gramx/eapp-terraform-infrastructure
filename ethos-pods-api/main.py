@@ -57,9 +57,9 @@ def create_pod():
                         {"name": "PGID", "value": "1000"},
                         {"name": "TZ", "value": "Etc/UTC"}
                     ],
-                    nodeSelector={"node-role.kubernetes.io/atlas": "atlas"}
                 )
-            ]
+            ],
+            node_selector={"node-role.kubernetes.io/atlas": "atlas"},
         )
     )
 
