@@ -21,8 +21,8 @@ check_port_forwarding() {
   fi
 }
 
-# Start the server with HTTPS using gunicorn
-gunicorn --certfile=$SSL_CERT --keyfile=$SSL_KEY -b 0.0.0.0:8000 ethos-pods-api.main:app &
+# Start the server in the background
+python ethos-pods-api/main.py &
 
 # Server process PID
 SERVER_PID=$!
