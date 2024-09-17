@@ -36,19 +36,19 @@ variable "ovpn_users" {
 
 # variable for additinal pod
 variable "pod_name" {
-  description = "Name of the Kubernetes pod"
+  description = "The name of the pod"
   type        = string
-  default     = "my-nginx-pod"  # You can set a default value or omit it
+  default     = "openssh-server-pod"
 }
 
-variable "pod_image" {
-  description = "Docker image for the Kubernetes pod"
+variable "image" {
+  description = "The Docker image to use for the pod"
   type        = string
-  default     = "nginx:latest"
+  default     = "ethosindia/openssh-server:latest"
 }
 
 variable "container_port" {
-  description = "Port to expose on the container"
+  description = "The port to expose on the container"
   type        = number
-  default     = 80
+  default     = 22
 }

@@ -25,21 +25,16 @@ output "ethos_worker_node_connection_string" {
 
 #Output for new pod
 output "pod_name" {
-  description = "The name of the Kubernetes pod"
+  description = "The name of the pod"
   value       = kubernetes_pod.pod.metadata[0].name
 }
 
-output "pod_namespace" {
-  description = "The namespace where the pod is deployed"
-  value       = kubernetes_pod.pod.metadata[0].namespace
-}
-
-output "pod_container_image" {
-  description = "The Docker image used in the pod container"
+output "pod_image" {
+  description = "The Docker image used for the pod"
   value       = kubernetes_pod.pod.spec[0].container[0].image
 }
 
-output "pod_container_port" {
-  description = "The port exposed by the pod container"
-  value       = kubernetes_pod.pod.spec[0].container[0].port[0].container_port
+output "container_port" {
+  description = "The container port exposed by the pod"
+  value       = kubernetes_pod.pod.spec[0].container[0].ports[0].container_port
 }

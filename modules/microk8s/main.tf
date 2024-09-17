@@ -223,9 +223,8 @@ resource "kubernetes_pod" "pod" {
 
   spec {
     container {
-      image = var.pod_image
-      name  = "nginx"
-
+      name  = "openssh-server"
+      image = var.image
       port {
         container_port = var.container_port
       }
