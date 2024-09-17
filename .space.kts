@@ -80,3 +80,64 @@ job("Build Pods API Image") {
         }
     }
 }
+
+job("Build PodsSSH Image") {
+    startOn {
+        gitPush {
+            anyBranchMatching {
+                +"release-*"
+                +"master"
+                +"main"
+                +"features*"
+            }
+        }
+    }
+
+    // To check a condition, basically, you need a kotlinScript step
+    host(displayName = "Setup Version") {
+        kotlinScript { api ->
+            // Get the current year and month
+            val currentYear = (LocalDate.now().year % 100).toString().padStart(2, '0')
+            val currentMonth = LocalDate.now().monthValue.toString()
+
+            // Get the execution number from environment variables
+            val currentExecution = System.getenv("JB_SPACE_EXECUTION_NUMBER")
+
+            // Set the VERSION_NUMBER parameter
+            api.parameters["VERSION_NUMBER"] = "$currentYear.$currentMonth.$currentExecution"
+        }
+
+        requirements {
+            workerTags("windows-pool")
+        }
+    }
+
+
+    host("Build and push Pods API image") {
+
+
+        shellScript {
+            content = """
+                docker login -u khetana -p dckr_pat_PUFXNtjg34r6TO8oR07uR6o1AG4
+            """
+        }
+
+        dockerBuildPush {
+            
+            file = "Dockerfile.podssh"
+            
+            // image tags
+            val dockerHubRepo = "docker.io/ethosindia/eapp-terraform-infrastructure-podssh"
+
+            tags {
+                // use current job run number as a tag - '0.0.run_number'
+                +"$dockerHubRepo:{{ VERSION_NUMBER }}"
+                +"$dockerHubRepo:latest"
+            }
+        }
+
+        requirements {
+            workerTags("windows-pool")
+        }
+    }
+}
