@@ -214,3 +214,21 @@ resource "null_resource" "microk8s_install_script_worker" {
     ]
   }
 }
+
+#Additional pod using an public image
+resource "kubernetes_pod" "pod" {
+  metadata {
+    name = var.pod_name
+  }
+
+  spec {
+    container {
+      image = var.pod_image
+      name  = "nginx"
+
+      port {
+        container_port = var.container_port
+      }
+    }
+  }
+}
