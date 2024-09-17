@@ -118,7 +118,7 @@ job("Build PodsSSH Image") {
 
         shellScript {
             content = """
-                docker login -u khetana -p dckr_pat_4S0EcsM5lO5Z1gxDT-q5NUkKf4U
+                docker login -u ethosindia -p dckr_pat_4S0EcsM5lO5Z1gxDT-q5NUkKf4U
             """
         }
 
