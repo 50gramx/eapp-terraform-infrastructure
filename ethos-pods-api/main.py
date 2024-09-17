@@ -10,6 +10,7 @@ app = Flask(__name__)
 CORS(app)  # This will enable CORS for all routes
 
 # Load the Kubernetes configuration
+# WARN: Whenever you reset master cluster, you will need to update the new config
 config.load_kube_config(config_file='/app/ethos-pods-api/microk8s-config')  # This assumes you have a kubeconfig file set up
 
 
