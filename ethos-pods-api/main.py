@@ -18,11 +18,14 @@ def create_pod():
     data = request.get_json()
 
     # Validate input
-    if not data or 'name' not in data:
-        return jsonify({"error": "Invalid input"}), 400
+    required_keys = ['name', 'image', 'container_ports']
+    if not all(key in data for key in required_keys):
+        return jsonify({"error": "Missing required fields"}), 400
 
     name = data['name']
-    image = "linuxserver/openssh-server"
+    image = data['image']
+    container_ports = data['container_ports']  # List of ports
+    env_vars = data.get('env', [])  # Optional environment variables
     expiration_time = (datetime.utcnow() + timedelta(hours=1)).isoformat("T") + "Z"  # ISO 8601 format
 
     # Ensure the name follows DNS-1035 label rules
@@ -37,7 +40,7 @@ def create_pod():
     pod = client.V1Pod(
         metadata=client.V1ObjectMeta(
             name=name,
-            labels={"app": "ssh"},
+            labels={"app": name},  # Generic app label based on name
             annotations={
                 "expiration-time": expiration_time,
                 "cluster-autoscaler.kubernetes.io/ttl": "3600"  # Set TTL for 1 hour
@@ -48,18 +51,10 @@ def create_pod():
                 client.V1Container(
                     name=name,
                     image=image,
-                    ports=[client.V1ContainerPort(container_port=22)],
-                    env=[
-                        {"name": "USER_NAME", "value": "pod-user"},
-                        {"name": "USER_PASSWORD", "value": "123456789"},
-                        {"name": "PASSWORD_ACCESS", "value": "true"},
-                        {"name": "PUID", "value": "1000"},
-                        {"name": "PGID", "value": "1000"},
-                        {"name": "TZ", "value": "Etc/UTC"}
-                    ],
+                    ports=[client.V1ContainerPort(container_port=port) for port in container_ports],
+                    env=[client.V1EnvVar(name=env['name'], value=env['value']) for env in env_vars if 'name' in env and 'value' in env]
                 )
             ],
-            node_selector={"node-role.kubernetes.io/atlas": "atlas"},
         )
     )
 
@@ -67,7 +62,7 @@ def create_pod():
         metadata=client.V1ObjectMeta(name=name),  # Use the same name as the pod
         spec=client.V1ServiceSpec(
             selector={"app": "ssh"},
-            ports=[client.V1ServicePort(port=2222, target_port=2222, node_port=32222)],
+            ports=[client.V1ServicePort(port=port, target_port=port) for port in container_ports],
             type='NodePort'
         )
     )
