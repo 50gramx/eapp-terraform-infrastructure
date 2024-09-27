@@ -83,17 +83,37 @@ def get_pods():
 
     # List all pods in the default namespace
     try:
+        # List all pods and services in the default namespace
         pods = v1.list_namespaced_pod(namespace="default")
+        services = v1.list_namespaced_service(namespace="default")
         nodes = v1.list_node()
 
-        # Extract public IPs of nodes
-        node_ips = {}
+        # Extract public IP of the master node
+        master_node_ip = None
         for node in nodes.items:
-            for address in node.status.addresses:
-                if address.type == "ExternalIP":
-                    node_ips[node.metadata.name] = address.address
-                elif address.type == "InternalIP" and node.metadata.name not in node_ips:
-                    node_ips[node.metadata.name] = address.address
+            if 'master' in node.metadata.labels.get('kubernetes.io/role', ''):
+                for address in node.status.addresses:
+                    if address.type == "ExternalIP":
+                        master_node_ip = address.address
+                        break
+            if master_node_ip:
+                break
+
+         # Ensure we have the master node's public IP
+        if not master_node_ip:
+            return jsonify({"error": "Master node public IP not found"}), 500
+
+        # Map service names to NodePorts
+        service_ports = {}
+        for service in services.items:
+            if service.spec.type == 'NodePort':
+                node_ports = []
+                for port in service.spec.ports:
+                    node_ports.append({
+                        'port': port.port,
+                        'node_port': port.node_port
+                    })
+                service_ports[service.metadata.name] = node_ports
 
         pod_list = []
         for pod in pods.items:
@@ -101,11 +121,13 @@ def get_pods():
             node_name = pod.spec.node_name
             expiration_time = pod.metadata.annotations.get("expiration-time")
 
-            if node_name in node_ips:
-                node_ip = node_ips[node_name]
-                ssh_command = f"ssh pod-user@{node_ip} -p 32222"
+            # Check if a corresponding NodePort service exists for the pod
+            if pod_name in service_ports:
+                # Use the first NodePort (you can modify this if there are multiple ports)
+                node_port = service_ports[pod_name][0]['node_port']
+                access_url = f"http://{master_node_ip}:{node_port}"
             else:
-                ssh_command = None
+                access_url = None
 
             pod_info = {
                 "name": pod_name,
@@ -113,10 +135,11 @@ def get_pods():
                 "node_name": node_name,
                 "status": pod.status.phase,
                 "start_time": pod.status.start_time,
-                "ssh_command": ssh_command,
+                "ssh_command": access_url,  # This is the URL for accessing the service
                 "scheduled_deletion_time": expiration_time
             }
             pod_list.append(pod_info)
+
         return jsonify({"pods": pod_list}), 200
     except client.exceptions.ApiException as e:
         return jsonify({"error": str(e)}), 500
