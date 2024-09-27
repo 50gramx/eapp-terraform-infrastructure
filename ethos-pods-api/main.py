@@ -63,7 +63,7 @@ def create_pod():
         spec=client.V1ServiceSpec(
             selector={"app": "ssh"},
             ports=[client.V1ServicePort(port=port, target_port=port) for port in container_ports],
-            type='LoadBalancer'
+            type='NodePort'
         )
     )
 
