@@ -91,7 +91,7 @@ def get_pods():
         # Extract public IP of the master node
         master_node_ip = None
         for node in nodes.items:
-            if 'master' in node.metadata.labels.get('kubernetes.io/role', ''):
+            if 'node.kubernetes.io/microk8s-controlplane' in node.metadata.labels:
                 for address in node.status.addresses:
                     if address.type == "ExternalIP":
                         master_node_ip = address.address
