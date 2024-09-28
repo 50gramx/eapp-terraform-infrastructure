@@ -89,15 +89,15 @@ def get_pods():
         nodes = v1.list_node()
 
         # Extract public IP of the master node
-        master_node_ip = None
-        for node in nodes.items:
-            if 'node.kubernetes.io/microk8s-controlplane' in node.metadata.labels:
-                for address in node.status.addresses:
-                    if address.type == "ExternalIP":
-                        master_node_ip = address.address
-                        break
-            if master_node_ip:
-                break
+        master_node_ip = "13.200.238.161"
+        # for node in nodes.items:
+        #     if 'node.kubernetes.io/microk8s-controlplane' in node.metadata.labels:
+        #         for address in node.status.addresses:
+        #             if address.type == "ExternalIP":
+        #                 master_node_ip = address.address
+        #                 break
+        #     if master_node_ip:
+        #         break
 
          # Ensure we have the master node's public IP
         if not master_node_ip:
