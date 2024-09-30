@@ -86,18 +86,9 @@ def get_pods():
         # List all pods and services in the default namespace
         pods = v1.list_namespaced_pod(namespace="default")
         services = v1.list_namespaced_service(namespace="default")
-        nodes = v1.list_node()
 
         # Extract public IP of the master node
         master_node_ip = "13.200.238.161"
-        # for node in nodes.items:
-        #     if 'node.kubernetes.io/microk8s-controlplane' in node.metadata.labels:
-        #         for address in node.status.addresses:
-        #             if address.type == "ExternalIP":
-        #                 master_node_ip = address.address
-        #                 break
-        #     if master_node_ip:
-        #         break
 
          # Ensure we have the master node's public IP
         if not master_node_ip:
@@ -117,7 +108,7 @@ def get_pods():
 
         pod_list = []
         for pod in pods.items:
-            pod_name = pod.metadata.name
+            pod_name = pod.metadata.labels.get("app", "")
             node_name = pod.spec.node_name
             expiration_time = pod.metadata.annotations.get("expiration-time")
 
